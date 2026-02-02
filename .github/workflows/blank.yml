@@ -1,0 +1,55 @@
+name: APIOps Pipeline
+
+on:
+  push:
+    branches: [ "main" ]      
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repo
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Install tools
+      - name: Install Tools
+        run: |
+          # Install Insomnia CLI
+          npm install -g insomnia-inso
+
+          # Install decK CLI
+          curl -sL https://github.com/kong/deck/releases/latest/download/deck_linux_amd64.tar.gz | tar xz
+          sudo mv deck /usr/local/bin/
+
+      # Step 3: Lint OpenAPI spec
+      - name: Lint OpenAPI
+        run: inso lint spec openapi/openapi.yaml
+
+      # Step 4: Generate Kong config
+      - name: Generate Kong config
+        run: deck file openapi2kong --spec openapi/openapi.yaml --output-file kong/kong.yaml
+
+      # Step 5: Deploy to Kong
+      - name: Deploy to Kong
+        run: |
+          deck sync \
+            --state kong/kong.yaml \
+            --kong-addr http://localhost:8001
+      # Step 6: Commit updated Kong config
+      - name: Commit updated Kong config
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add kong/kong.yaml
+          git commit -m "Update kong.yaml from workflow"
+          git push origin main
+
+            
+
+
+      
