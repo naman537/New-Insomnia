@@ -37,7 +37,7 @@ spec:
         description: This is the  kong api tag.
       - name: health-api
         description: This is the health api tag.
-      - name: data-api
+      - name: kong-data
         description: This is the data api.
     paths:
       /kong-routes:
@@ -66,11 +66,11 @@ spec:
           description: This shows the path of the data service
           operationId: ijkl
           tags:
-            - data-api
+            - kong-data
           responses:
             "200":
               description: ok
   meta:
     id: spc_59b106ecaf3740eeb6ed058879b26cdf
     created: 1770024780535
-    modified: 1770035782661
+    modified: 1770036241537
