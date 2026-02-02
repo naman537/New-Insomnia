@@ -1,0 +1,23 @@
+_format_version: "3.0"
+services:
+- host: httpbin.org
+  id: 214ebeee-2008-5067-8af5-8277431a0c40
+  name: open-api-specification
+  path: /
+  plugins: []
+  port: 80
+  protocol: http
+  routes:
+  - id: 41211247-1bf2-5997-9e7a-01faa7df9697
+    methods:
+    - GET
+    name: open-api-specification_abcd
+    paths:
+    - ~/kong-routes$
+    plugins: []
+    regex_priority: 200
+    strip_path: false
+    tags: []
+  tags: []
+upstreams: []
+
