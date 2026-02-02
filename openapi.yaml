@@ -34,7 +34,9 @@ spec:
         description: This is the actual backend server.
     tags:
       - name: kong-api
-        description: This is the tag of the kong.
+        description: This is the  kong api tag.
+      - name: health-api
+        description: This is the health api tag.
     paths:
       /kong-routes:
         get:
@@ -46,7 +48,17 @@ spec:
           responses:
             "200":
               description: ok
+      /health:
+        get:
+          summary: This is the route for the heath service.
+          description: This shows the path of the health service
+          operationId: efgh
+          tags:
+            - health-api
+          responses:
+            "200":
+              description: ok
   meta:
     id: spc_59b106ecaf3740eeb6ed058879b26cdf
     created: 1770024780535
-    modified: 1770024784633
+    modified: 1770032422905
