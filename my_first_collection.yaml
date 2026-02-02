@@ -1,0 +1,47 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: My first collection
+meta:
+  id: wrk_94c5eb65a8504c1cbf72f2f650d73915
+  created: 1770024792543
+  modified: 1770024792543
+  description: ""
+collection:
+  - url: "{{ _.base_url }}/kong-routes"
+    name: My first request
+    meta:
+      id: req_1df944d88dc545f993bb73b484a3037b
+      created: 1770024792568
+      modified: 1770024838064
+      isPrivate: false
+      description: ""
+      sortKey: -1770024792568
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.2.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_7435bc62acfacfbe74b3c14c1794ef412f42a797
+    created: 1770024792565
+    modified: 1770024792565
+environments:
+  name: Base Environment
+  meta:
+    id: env_7435bc62acfacfbe74b3c14c1794ef412f42a797
+    created: 1770024792564
+    modified: 1770024819385
+    isPrivate: false
+  data:
+    base_url: http://localhost:8000
