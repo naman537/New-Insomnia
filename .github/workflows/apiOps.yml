@@ -13,7 +13,7 @@ jobs:
       KONG_ADMIN_URL: http://localhost:8001
 
     steps:
-      # 1️⃣ Checkout code
+      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 20
 
-      # 3️⃣ Install Node dependencies (PRODUCTION SAFE)
+      # 3️⃣ Install Node dependencies (REQUIRES package-lock.json)
       - name: Install Node dependencies
         run: npm ci
 
@@ -31,30 +31,35 @@ jobs:
       - name: Install OpenAPI CLI
         run: npm install -g @redocly/openapi-cli
 
-      # 5️⃣ Lint OpenAPI (QUALITY GATE)
+      # 5️⃣ Lint OpenAPI (fail-fast)
       - name: Lint OpenAPI
         run: openapi lint openapi.yaml
 
-      # 6️⃣ Generate deck.yaml from OpenAPI (CORE STEP)
+      # 6️⃣ Generate deck.yaml
       - name: Generate deck.yaml
         run: npm run generate-deck
 
-      # 7️⃣ Install Kong deck CLI
+      # 7️⃣ Install deck CLI (PINNED VERSION — IMPORTANT)
       - name: Install deck CLI
         run: |
-          curl -sL https://github.com/kong/deck/releases/latest/download/deck_linux_amd64 -o deck
+          curl -sL https://github.com/kong/deck/releases/download/v1.40.2/deck_1.40.2_linux_amd64.tar.gz -o deck.tar.gz
+          tar -xzf deck.tar.gz
           chmod +x deck
           sudo mv deck /usr/local/bin/deck
 
-      # 8️⃣ Validate deck.yaml
-      - name: Validate deck config
+      # 8️⃣ Verify deck installation
+      - name: Verify deck
+        run: deck version
+
+      # 9️⃣ Validate deck.yaml
+      - name: Validate deck
         run: deck validate -s deck.yaml
 
-      # 9️⃣ Deploy to Kong (staging / no auth)
-      - name: Sync to Kong
+      # 🔟 Deploy to Kong (staging / no auth)
+      - name: Deploy to Kong
         run: deck sync -s deck.yaml --kong-addr $KONG_ADMIN_URL
 
-      # 🔟 Commit generated deck.yaml back to GitHub
+      # 1️⃣1️⃣ Commit generated deck.yaml back to GitHub
       - name: Commit deck.yaml
         run: |
           git config user.name "github-actions"
