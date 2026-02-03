@@ -4,7 +4,7 @@
   "description": "",
   "main": "generate-deck.js",
   "scripts": {
-    "test": "node generate-deck.js"
+    "generate-deck": "node generate-deck.js"
   },
   "repository": {
     "type": "git",
