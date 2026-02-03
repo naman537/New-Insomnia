@@ -30,12 +30,12 @@ collection:
         send: true
         store: true
       rebuildPath: true
-  - url: "{{ _.base_url }}/data-routes"
+  - url: "{{ _.base_url }}/payment-routes"
     name: New Request
     meta:
       id: req_48aee2db81b344598febfe4eb7dcac19
       created: 1770096753844
-      modified: 1770096783628
+      modified: 1770098346489
       isPrivate: false
       description: ""
       sortKey: -1770096753844
