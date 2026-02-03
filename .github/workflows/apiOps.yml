@@ -57,7 +57,7 @@ jobs:
 
       # 🔟 Deploy to Kong (staging / no auth)
       - name: Deploy to Kong
-        run: deck sync -s deck.yaml --kong-addr $KONG_ADMIN_URL
+        run: deck gateway sync -s deck.yaml --kong-addr $KONG_ADMIN_URL
 
       # 1️⃣1️⃣ Commit generated deck.yaml back to GitHub
       - name: Commit deck.yaml
