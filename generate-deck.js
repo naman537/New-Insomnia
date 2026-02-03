@@ -1,16 +1,18 @@
 const fs = require('fs');
 const yaml = require('js-yaml');
 
-// Load OpenAPI spec
-const openapi = yaml.load(fs.readFileSync('openapi.yaml', 'utf8'));
+// Load the Insomnia export
+const insomnia = yaml.load(fs.readFileSync('openapi.yaml', 'utf8'));
 
-// Validate paths exist
+// Extract OpenAPI content
+const openapi = insomnia.spec?.contents;
+
 if (!openapi || !openapi.paths) {
-  console.error("❌ openapi.yaml is missing 'paths' section or is invalid!");
+  console.error("❌ OpenAPI content missing 'paths' section or is invalid!");
   process.exit(1);
 }
 
-// Transform OpenAPI paths to Kong services & routes
+// Transform OpenAPI paths into Kong services & routes
 const deck = {
   _format_version: "1.1",
   services: Object.keys(openapi.paths).map(path => ({
