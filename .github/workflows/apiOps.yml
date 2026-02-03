@@ -5,72 +5,56 @@ permissions:
   pull-requests: write
 
 on:
-  pull_request:
   push:
     branches: [master]
+  pull_request:
 
 jobs:
   apiops:
     runs-on: ubuntu-latest
 
-    env:
-      KONG_ADMIN_URL: http://localhost:8001
-
     steps:
-      # 1 Checkout repository
+      # 1️⃣ Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2 Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      # 3 Install Node dependencies (REQUIRES package-lock.json)
-      - name: Install Node dependencies
-        run: npm ci
-
-      # 4 Install OpenAPI linter
+      # 2️⃣ Install OpenAPI linter
       - name: Install OpenAPI CLI
         run: npm install -g @redocly/openapi-cli
 
-      # 5 Lint OpenAPI (fail-fast)
+      # 3️⃣ Lint OpenAPI (PR-safe)
       - name: Lint OpenAPI
         run: openapi lint openapi.yaml
 
-      # 6 Generate deck.yaml
-      - name: Generate deck.yaml
-        run: npm run generate-deck
-
-      # 7 Install deck CLI (PINNED VERSION — IMPORTANT)
-      - name: Install deck CLI
+      # 4️⃣ Install deck CLI (PINNED)
+      - name: Install deck
         run: |
           curl -sL https://github.com/kong/deck/releases/download/v1.40.2/deck_1.40.2_linux_amd64.tar.gz -o deck.tar.gz
           tar -xzf deck.tar.gz
           chmod +x deck
           sudo mv deck /usr/local/bin/deck
 
-      # 8 Verify deck installation
-      - name: Verify deck
-        run: deck version
+      # 5️⃣ Generate deck.yaml
+      - name: Generate deck.yaml
+        run: |
+          deck file openapi2kong \
+            -s openapi.yaml \
+            -o deck.yaml
 
-      # 9 Validate deck.yaml
+      # 6️⃣ Validate deck.yaml
       - name: Validate deck
         run: deck validate -s deck.yaml
 
-      # 10 Commit updated deck.yaml
-      - name: Commit updated deck.yaml
+      # 7️⃣ Commit ONLY on push to master
+      - name: Commit deck.yaml
+        if: github.event_name == 'push'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          # Create / reset generated branch 
           git checkout -B generated-deck
-
           git add deck.yaml
           git diff --cached --quiet || git commit -m "chore: regenerate deck.yaml from OpenAPI [skip ci]"
-
           git push -u https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git generated-deck --force
