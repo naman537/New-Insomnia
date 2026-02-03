@@ -1,23 +1,46 @@
-_format_version: "3.0"
+_format_version: '1.1'
 services:
-- host: httpbin.org
-  id: 214ebeee-2008-5067-8af5-8277431a0c40
-  name: open-api-specification
-  path: /
-  plugins: []
-  port: 80
-  protocol: http
-  routes:
-  - id: 41211247-1bf2-5997-9e7a-01faa7df9697
-    methods:
-    - GET
-    name: open-api-specification_abcd
-    paths:
-    - ~/kong-routes$
-    plugins: []
-    regex_priority: 200
-    strip_path: false
-    tags: []
-  tags: []
-upstreams: []
-
+  - name: kong-routes
+    url: http://httpbin.org:80
+    routes:
+      - name: kong-routes-route
+        paths:
+          - /kong-routes
+        methods:
+          - get
+        protocols:
+          - http
+          - https
+  - name: health
+    url: http://httpbin.org:80
+    routes:
+      - name: health-route
+        paths:
+          - /health
+        methods:
+          - get
+        protocols:
+          - http
+          - https
+  - name: data-routes
+    url: http://httpbin.org:80
+    routes:
+      - name: data-routes-route
+        paths:
+          - /data-routes
+        methods:
+          - get
+        protocols:
+          - http
+          - https
+  - name: payment-routes
+    url: http://httpbin.org:80
+    routes:
+      - name: payment-routes-route
+        paths:
+          - /payment-routes
+        methods:
+          - get
+        protocols:
+          - http
+          - https
