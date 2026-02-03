@@ -1,4 +1,4 @@
-name: OpenAPI Pipeline
+name: APIOps Pipeline
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      KONG_ADMIN_URL: http://localhost:8001   
+      KONG_ADMIN_URL: http://localhost:8001
 
     steps:
       # 1️⃣ Checkout repo
@@ -26,7 +26,7 @@ jobs:
       - name: Install OpenAPI CLI
         run: npm install -g @redocly/openapi-cli
 
-      # 4️⃣ Lint OpenAPI spec
+      # 4️⃣ Lint OpenAPI
       - name: Lint OpenAPI
         run: openapi lint openapi.yaml
 
@@ -37,17 +37,17 @@ jobs:
           chmod +x deck
           sudo mv deck /usr/local/bin/
 
-      # 6️⃣ Generate deck.yaml from OpenAPI
+      # 6️⃣ Generate deck.yaml using Node.js
       - name: Generate deck.yaml
         run: |
           echo "Generating deck.yaml from OpenAPI..."
-          deck file openapi2kong --spec openapi.yaml --output-file deck.yaml
+          node generate-deck.js
 
       # 7️⃣ Validate deck.yaml
       - name: Validate deck.yaml
         run: deck validate -s deck.yaml
 
-      # 8️⃣ Deploy deck.yaml to staging Kong
+      # 8️⃣ Deploy to staging Kong
       - name: Deploy to staging Kong
         run: deck sync -s deck.yaml -t $KONG_ADMIN_URL
 
@@ -58,4 +58,4 @@ jobs:
           git config --global user.email "github-actions@github-actions.com"
           git add deck.yaml
           git commit -m "Update deck.yaml from OpenAPI [skip ci]" || echo "No changes to commit"
-          git push origin main
+          git push origin master
