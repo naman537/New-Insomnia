@@ -2,52 +2,63 @@ name: APIOps Production Pipeline
 
 on:
   push:
-    branches: ["master"]
+    branches: ["master"]        # Run when code is pushed to main (production)
   pull_request:
-    branches: ["master"]
+    branches: ["master"]        # Optional: PR validation
 
 jobs:
   generate-and-deploy:
     runs-on: ubuntu-latest
     env:
+      # Staging or production Kong URL (set in GitHub secrets)
       KONG_ADMIN_URL: ${{ secrets.KONG_ADMIN_URL }}
-      KONG_ADMIN_TOKEN: ${{ secrets.KONG_ADMIN_TOKEN }}
+      KONG_ADMIN_TOKEN: ${{ secrets.KONG_ADMIN_TOKEN }} # optional if auth required
 
     steps:
       # 1️⃣ Checkout repository
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       # 2️⃣ Setup Node.js
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # 3️⃣ Install Node.js dependencies (local)
-      - run: npm ci
+      # 3️⃣ Install Node.js dependencies from package-lock.json (production-grade)
+      - name: Install Node.js dependencies
+        run: npm ci
 
       # 4️⃣ Install OpenAPI CLI globally
-      - run: npm install -g @redocly/openapi-cli
+      - name: Install OpenAPI CLI
+        run: npm install -g @redocly/openapi-cli
 
       # 5️⃣ Lint OpenAPI spec
-      - run: openapi lint openapi.yaml
+      - name: Lint OpenAPI
+        run: openapi lint openapi.yaml
 
       # 6️⃣ Install Kong Deck CLI
-      - run: |
+      - name: Install Kong Deck
+        run: |
           curl -Lo deck https://github.com/kong/deck/releases/latest/download/deck_linux_amd64
           chmod +x deck
           sudo mv deck /usr/local/bin/
 
       # 7️⃣ Generate deck.yaml using Node.js script
-      - run: node generate-deck.js
+      - name: Generate deck.yaml
+        run: node generate-deck.js
 
       # 8️⃣ Validate deck.yaml
-      - run: deck validate -s deck.yaml
+      - name: Validate deck.yaml
+        run: deck validate -s deck.yaml
 
-      # 9️⃣ Deploy to Kong
-      - run: deck sync -s deck.yaml -t $KONG_ADMIN_URL
+      # 9️⃣ Deploy deck.yaml to Kong
+      - name: Deploy to Kong
+        run: deck sync -s deck.yaml -t $KONG_ADMIN_URL
 
       # 🔟 Commit updated deck.yaml back to GitHub
-      - run: |
+      - name: Commit updated deck.yaml
+        run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github-actions.com"
           git add deck.yaml
