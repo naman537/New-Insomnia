@@ -1,4 +1,4 @@
-name: APIOps Pipeline
+name: OpenAPI Pipeline
 
 on:
   push:
@@ -8,11 +8,13 @@ jobs:
   generate-and-deploy:
     runs-on: ubuntu-latest
     env:
+      # GitHub token for committing back
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Staging Kong URL
       KONG_ADMIN_URL: http://localhost:8001
 
     steps:
-      # 1️⃣ Checkout repo
+      # 1️⃣ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -22,36 +24,39 @@ jobs:
         with:
           node-version: 20
 
-      # 3️⃣ Install OpenAPI CLI
+      # 3️⃣ Install Node.js dependencies for deck generation
+      - name: Install Node.js dependencies
+        run: |
+          npm install
+
+      # 4️⃣ Install OpenAPI CLI
       - name: Install OpenAPI CLI
         run: npm install -g @redocly/openapi-cli
 
-      # 4️⃣ Lint OpenAPI
+      # 5️⃣ Lint OpenAPI spec
       - name: Lint OpenAPI
         run: openapi lint openapi.yaml
 
-      # 5️⃣ Install Kong Deck CLI
+      # 6️⃣ Install Kong Deck CLI
       - name: Install Kong Deck
         run: |
           curl -Lo deck https://github.com/kong/deck/releases/latest/download/deck_linux_amd64
           chmod +x deck
           sudo mv deck /usr/local/bin/
 
-      # 6️⃣ Generate deck.yaml using Node.js
+      # 7️⃣ Generate deck.yaml using Node.js script
       - name: Generate deck.yaml
-        run: |
-          echo "Generating deck.yaml from OpenAPI..."
-          node generate-deck.js
+        run: node generate-deck.js
 
-      # 7️⃣ Validate deck.yaml
+      # 8️⃣ Validate deck.yaml
       - name: Validate deck.yaml
         run: deck validate -s deck.yaml
 
-      # 8️⃣ Deploy to staging Kong
+      # 9️⃣ Deploy deck.yaml to staging Kong
       - name: Deploy to staging Kong
         run: deck sync -s deck.yaml -t $KONG_ADMIN_URL
 
-      # 9️⃣ Commit updated deck.yaml back to GitHub
+      # 🔟 Commit updated deck.yaml back to GitHub
       - name: Commit updated deck.yaml
         run: |
           git config --global user.name "github-actions"
