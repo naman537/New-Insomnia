@@ -16,30 +16,31 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Install Tools
-      - name: Install Tools
-        run: |
-          npm install -g insomnia-inso
-
-          curl -sL https://github.com/kong/deck/releases/latest/download/deck_linux_amd64.tar.gz | tar xz
-          sudo mv deck /usr/local/bin/deck
-
-      # 3️⃣ Lint OpenAPI (PR + main)
+      # 2️⃣ Lint OpenAPI (PR + main)
       - name: Lint OpenAPI spec
         run: |
-          inso lint spec openapi/openapi.yaml
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspace \
+            kong/inso:latest \
+            lint spec /workspace/openapi/openapi.yaml
 
-      # 4️⃣ Generate Kong config (PR + main)
+      # 3️⃣ Generate Kong config (PR + main)
       - name: Generate Kong config
         run: |
-          deck file openapi2kong \
-            --spec openapi/openapi.yaml \
-            --output-file kong/kong.yaml
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspace \
+            kong/deck:latest \
+            file openapi2kong \
+              --spec /workspace/openapi/openapi.yaml \
+              --output-file /workspace/kong/kong.yaml
 
-      # 5️⃣ Deploy ONLY on main branch push
+      # 4️⃣ Deploy ONLY on master branch push
       - name: Deploy to Kong
         if: github.event_name == 'push'
         run: |
-          deck sync \
-            --state kong/kong.yaml \
-            --kong-addr http://localhost:8001
+          docker run --rm \
+            -v ${{ github.workspace }}:/workspace \
+            kong/deck:latest \
+            sync \
+              --state /workspace/kong/kong.yaml \
+              --kong-addr http://localhost:8001
