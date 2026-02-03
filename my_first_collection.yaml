@@ -7,12 +7,12 @@ meta:
   modified: 1770024792543
   description: ""
 collection:
-  - url: "{{ _.base_url }}/data-routes"
+  - url: "{{ _.base_url }}/payment-routes"
     name: My first request
     meta:
       id: req_1df944d88dc545f993bb73b484a3037b
       created: 1770024792568
-      modified: 1770035809986
+      modified: 1770095058617
       isPrivate: false
       description: ""
       sortKey: -1770024792568
