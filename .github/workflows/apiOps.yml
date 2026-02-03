@@ -52,11 +52,8 @@ jobs:
       - name: Validate deck
         run: deck validate -s deck.yaml
 
-      # 9️⃣ Deploy to Kong
-      - name: Deploy deck to Kong
-        run: deck gateway sync deck.yaml --kong-addr http://localhost:8002
-
-      # 🔟 Commit deck.yaml back to GitHub (only on push to master)
+      
+      # 9 Commit deck.yaml back to GitHub (only on push to master)
       - name: Commit updated deck.yaml
         if: github.event_name == 'push'
         env:
