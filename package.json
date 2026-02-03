@@ -1,0 +1,24 @@
+{
+  "name": "new-insomnia",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate-deck.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/naman537/New-Insomnia.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/naman537/New-Insomnia/issues"
+  },
+  "homepage": "https://github.com/naman537/New-Insomnia#readme",
+  "dependencies": {
+    "js-yaml": "^4.1.1"
+  }
+}
