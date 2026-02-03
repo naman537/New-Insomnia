@@ -55,7 +55,7 @@ jobs:
       - name: Validate deck
         run: deck validate -s deck.yaml
 
-      # 10. Commit updated deck.yaml to a separate branch
+      # 10 Commit updated deck.yaml
       - name: Commit updated deck.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -63,14 +63,10 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          # Create or reset the branch
+          # Create / reset generated branch 
           git checkout -B generated-deck
 
-          # Add changes
           git add deck.yaml
-
-          # Commit if there are changes
           git diff --cached --quiet || git commit -m "chore: regenerate deck.yaml from OpenAPI [skip ci]"
 
-          # Push branch to GitHub
           git push -u https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git generated-deck --force
