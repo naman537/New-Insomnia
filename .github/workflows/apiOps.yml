@@ -8,13 +8,11 @@ jobs:
   generate-and-deploy:
     runs-on: ubuntu-latest
     env:
-      # GitHub token for committing back
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # Staging Kong URL
       KONG_ADMIN_URL: http://localhost:8001
 
     steps:
-      # 1️⃣ Checkout repository
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -24,12 +22,11 @@ jobs:
         with:
           node-version: 20
 
-      # 3️⃣ Install Node.js dependencies for deck generation
-      - name: Install Node.js dependencies
-        run: |
-          npm install
+      # 3️⃣ Install js-yaml globally (no package.json needed)
+      - name: Install js-yaml globally
+        run: npm install -g js-yaml
 
-      # 4️⃣ Install OpenAPI CLI
+      # 4️⃣ Install OpenAPI CLI globally
       - name: Install OpenAPI CLI
         run: npm install -g @redocly/openapi-cli
 
