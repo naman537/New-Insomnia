@@ -1,46 +1,51 @@
-name: APIOps Pipeline
+name: OpenAPI
 
 on:
-  pull_request:
-    branches: ["master"]
   push:
     branches: ["master"]
-  workflow_dispatch:
 
 jobs:
-  apiops:
+  deploy-staging:
     runs-on: ubuntu-latest
 
+    env:
+      KONG_ADMIN_URL: http://staging-kong:8001   
+
     steps:
-      # 1️⃣ Checkout
-      - name: Checkout Repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      # 2️⃣ Lint OpenAPI (PR + main)
-      - name: Lint OpenAPI spec
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/workspace \
-            kong/inso:latest \
-            lint spec /workspace/openapi/openapi.yaml
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-      # 3️⃣ Generate Kong config (PR + main)
-      - name: Generate Kong config
-        run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/workspace \
-            kong/deck:latest \
-            file openapi2kong \
-              --spec /workspace/openapi/openapi.yaml \
-              --output-file /workspace/kong/kong.yaml
+      - name: Install OpenAPI CLI
+        run: npm install -g @redocly/openapi-cli
 
-      # 4️⃣ Deploy ONLY on master branch push
-      - name: Deploy to Kong
-        if: github.event_name == 'push'
+      - name: Lint OpenAPI
+        run: openapi lint openapi.yaml
+
+      - name: Install Kong Deck
         run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/workspace \
-            kong/deck:latest \
-            sync \
-              --state /workspace/kong/kong.yaml \
-              --kong-addr http://localhost:8001
+          curl -Lo deck https://github.com/kong/deck/releases/latest/download/deck_linux_amd64
+          chmod +x deck
+          sudo mv deck /usr/local/bin/
+
+      - name: Generate Kong Deck
+        run: kong-deck generate -i openapi.yaml -o deck.yaml
+
+      - name: Validate Deck
+        run: deck validate -s deck.yaml
+
+      - name: Deploy to Staging Kong
+        run: deck sync -s deck.yaml -t $KONG_ADMIN_URL
+
+      - name: Commit updated deck.yaml
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github-actions.com"
+          git add deck.yaml
+          git commit -m "Update deck.yaml from OpenAPI [skip ci]" || echo "No changes to commit"
+          git push origin main
+
