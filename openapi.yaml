@@ -37,10 +37,10 @@ spec:
         description: This is the  kong api tag.
       - name: health-api
         description: This is the health api tag.
-      - name: payment
-        description: This is the payment api tag.
-      - name: kong-data
+      - name: data-api
         description: This is the data api.
+      - name: payment-api
+        description: This is the payment api tag.
     paths:
       /kong-routes:
         get:
@@ -52,7 +52,7 @@ spec:
           responses:
             "200":
               description: ok
-      /health:
+      /health-routes:
         get:
           summary: This is the route for the heath service.
           description: This shows the path of the health service
@@ -68,21 +68,21 @@ spec:
           description: This shows the path of the data service
           operationId: ijkl
           tags:
-            - kong-data
+            - data-api
           responses:
             "200":
               description: ok
       /payment-routes:
         get:
-          summary: This is the payment route for the service.
-          description: This shows the get request on the given service.
+          summary: This is the payment api for the service.
+          description: This shows the payment for the service.
           operationId: mnlo
           tags:
-            - payment
+            - payment-api
           responses:
             "200":
               description: ok
   meta:
     id: spc_59b106ecaf3740eeb6ed058879b26cdf
     created: 1770024780535
-    modified: 1770095020356
+    modified: 1770098323633
