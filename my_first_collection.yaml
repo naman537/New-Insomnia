@@ -7,15 +7,38 @@ meta:
   modified: 1770024792543
   description: ""
 collection:
-  - url: "{{ _.base_url }}/payment-routes"
+  - url: "{{ _.base_url }}/health-routes"
     name: My first request
     meta:
       id: req_1df944d88dc545f993bb73b484a3037b
       created: 1770024792568
-      modified: 1770095058617
+      modified: 1770096707256
       isPrivate: false
       description: ""
       sortKey: -1770024792568
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.2.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_url }}/data-routes"
+    name: New Request
+    meta:
+      id: req_48aee2db81b344598febfe4eb7dcac19
+      created: 1770096753844
+      modified: 1770096783628
+      isPrivate: false
+      description: ""
+      sortKey: -1770096753844
     method: GET
     headers:
       - name: User-Agent

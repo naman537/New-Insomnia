@@ -52,7 +52,7 @@ spec:
           responses:
             "200":
               description: ok
-      /health:
+      /health-routes:
         get:
           summary: This is the route for the heath service.
           description: This shows the path of the health service
@@ -72,17 +72,7 @@ spec:
           responses:
             "200":
               description: ok
-      /payment-routes:
-        get:
-          summary: This is the payment route for the service.
-          description: This shows the get request on the given service.
-          operationId: mnlo
-          tags:
-            - payment
-          responses:
-            "200":
-              description: ok
   meta:
     id: spc_59b106ecaf3740eeb6ed058879b26cdf
     created: 1770024780535
-    modified: 1770095020356
+    modified: 1770096725522
