@@ -12,19 +12,19 @@ if (!openapi || !openapi.paths) {
 
 // Generate deck.yaml for Kong
 const deck = {
-  _format_version: "1.1",
+  _format_version: "3.0.0",
   services: Object.keys(openapi.paths).map(path => ({
     name: path.replace(/\//g, '-').replace(/^-/, ''),
     url: openapi.servers?.[0]?.url || 'http://localhost:8080',
     routes: [{
-      name: path.replace(/\//g, '-').replace(/^-/, '') + '-route', // ✅ unique route name
+      name: path.replace(/\//g, '-').replace(/^-/, ''), 
       paths: [path],
-      methods: Object.keys(openapi.paths[path]) || ['GET'],       // include HTTP methods
-      protocols: ['http', 'https']                                // required
+      methods: Object.keys(openapi.paths[path]) || ['GET'],       
+      protocols: ['http', 'https']                                
     }]
   }))
 };
 
 // Write deck.yaml
 fs.writeFileSync('deck.yaml', yaml.dump(deck), 'utf8');
-console.log('✅ deck.yaml generated successfully');
+console.log('deck.yaml generated successfully');
