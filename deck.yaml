@@ -1,46 +1,37 @@
-_format_version: '1.1'
+_format_version: '3.0'
 services:
-  - name: kong-routes
+  - name: backend-service
     url: http://httpbin.org:80
     routes:
-      - name: kong-routes-route
+      - name: kong-routes
         paths:
           - /kong-routes
         methods:
-          - get
+          - GET
         protocols:
           - http
           - https
-  - name: health
-    url: http://httpbin.org:80
-    routes:
-      - name: health-route
+      - name: health
         paths:
           - /health
         methods:
-          - get
+          - GET
         protocols:
           - http
           - https
-  - name: data-routes
-    url: http://httpbin.org:80
-    routes:
-      - name: data-routes-route
+      - name: data-routes
         paths:
           - /data-routes
         methods:
-          - get
+          - GET
         protocols:
           - http
           - https
-  - name: payment-routes
-    url: http://httpbin.org:80
-    routes:
-      - name: payment-routes-route
+      - name: payment-routes
         paths:
           - /payment-routes
         methods:
-          - get
+          - GET
         protocols:
           - http
           - https
