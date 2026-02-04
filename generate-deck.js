@@ -1,30 +1,36 @@
 const fs = require('fs');
 const yaml = require('js-yaml');
 
-// Load Insomnia export
+// Load Insomnia OpenAPI export
 const insomnia = yaml.load(fs.readFileSync('openapi.yaml', 'utf8'));
-const openapi = insomnia.spec?.contents;
+const openapi = insomnia.spec?.contents || insomnia;
 
+// Basic validation
 if (!openapi || !openapi.paths) {
-  console.error("❌ OpenAPI content missing 'paths' section or is invalid!");
+  console.error("OpenAPI content missing 'paths' section or is invalid!");
   process.exit(1);
 }
 
-// Generate deck.yaml for Kong
+// Build routes from OpenAPI paths
+const routes = Object.entries(openapi.paths).map(([path, methods]) => ({
+  name: path.replace(/\//g, '-').replace(/^-/, ''),
+  paths: [path],
+  methods: Object.keys(methods).map(m => m.toUpperCase()),
+  protocols: ['http', 'https']
+}));
+
+// Build deck.yaml
 const deck = {
-  _format_version: "3.0.0",
-  services: Object.keys(openapi.paths).map(path => ({
-    name: path.replace(/\//g, '-').replace(/^-/, ''),
-    url: openapi.servers?.[0]?.url || 'http://localhost:8080',
-    routes: [{
-      name: path.replace(/\//g, '-').replace(/^-/, ''), 
-      paths: [path],
-      methods: Object.keys(openapi.paths[path]) || ['GET'],       
-      protocols: ['http', 'https']                                
-    }]
-  }))
+  _format_version: "3.0",
+  services: [
+    {
+      name: "backend-service",
+      url: openapi.servers?.[0]?.url || "http://httpbin.org:8001",
+      routes
+    }
+  ]
 };
 
 // Write deck.yaml
-fs.writeFileSync('deck.yaml', yaml.dump(deck), 'utf8');
+fs.writeFileSync('deck.yaml', yaml.dump(deck, { noRefs: true }), 'utf8');
 console.log('deck.yaml generated successfully');
